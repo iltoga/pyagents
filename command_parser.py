@@ -35,8 +35,8 @@ class CommandParser:
         self.prompt_template = prompt_template
 
         #Download the model (if not already downloaded)
-        hf_hub_download(self.repo_id, filename=self.ggml_model)
-        self.model = Model(ggml_model=self.ggml_model, **self.llama_context_params)
+        pointer_path = hf_hub_download(self.repo_id, filename=self.ggml_model)
+        self.model = Model(ggml_model=pointer_path, **self.llama_context_params)
 
     # Generates a prompt string for the model to use as input. The prompt is created by rendering a Jinja2 template 
     # using the command, user input, and the name of the current operating system.
