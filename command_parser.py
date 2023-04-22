@@ -5,13 +5,19 @@
 # provided by the pyllamacpp package to generate text based on the prompt generated from the user's input. 
 # It uses the jinja2 package to create prompts from a template 
 # and the duckduckgo_search package for language translation.
+#
+# E.g. use the following code to generate text from the model
+# command_parser = CommandParser()
+# cmdToExecute = command_parser.GenerateText(command, best_match_application, prompt_template="parse_command", prompt_dir="prompt_templates")
+# 
+# Note that prompt_dir, the directory where the prompt templates are stored, is a local directory 
+# to the project importing this class.
 
 from huggingface_hub import hf_hub_download
 from jinja2 import Environment, FileSystemLoader
 from pyllamacpp.model import Model
 
 from pyagents.utils import get_os_name, string_to_array, translateTo
-
 
 class CommandParser:
     # Initializes an instance of the CommandParser class with a specified model name, repository ID, 
@@ -20,7 +26,8 @@ class CommandParser:
         self, 
         model_name="ggjt-model.bin", 
         repo_id="LLukas22/gpt4all-lora-quantized-ggjt", 
-        prompt_template="parse_command"
+        prompt_template="parse_command",
+        prompt_dir="prompt_templates"
     ):
         self.repo_id = repo_id
         self.ggml_model = model_name
@@ -33,6 +40,7 @@ class CommandParser:
             "temp": 0.2,
         }
         self.prompt_template = prompt_template
+        self.prompt_dir = prompt_dir
 
         #Download the model (if not already downloaded)
         pointer_path = hf_hub_download(self.repo_id, filename=self.ggml_model)
@@ -45,7 +53,7 @@ class CommandParser:
             prompt_template = self.prompt_template
 
         # get the template and compile the prompt
-        env = Environment(loader=FileSystemLoader('prompt_templates'))
+        env = Environment(loader=FileSystemLoader(self.prompt_dir))
         template = env.get_template(f"{prompt_template}.j2")
 
         # Translate the product description to english to facilitate the model generating the fun fact
