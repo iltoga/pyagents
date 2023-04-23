@@ -69,7 +69,6 @@ class CommandParser:
         prompt = self._generatePrompt(command=command, user_input=user_input, prompt_template=prompt_template)
         generated_text = self.model.generate(
             prompt,
-            new_text_callback=None, # type: ignore
             verbose=False,
             **self.gpt_params,
         )
