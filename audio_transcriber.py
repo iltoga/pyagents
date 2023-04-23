@@ -16,7 +16,7 @@ import signal
 import sys
 
 class AudioTranscriber:
-    def __init__(self, speech_recognition_model, transcription_callback=None):
+    def __init__(self, speech_recognition_model="jonatasgrosman/wav2vec2-large-xlsr-53-english", transcription_callback=None):
         self.fs = 44100
         self.recording = []
         self.is_recording = False
@@ -73,8 +73,9 @@ class AudioTranscriber:
         transcription = None
         if self.is_recording:
             self.is_recording = False
-            self.stream.stop()
-            self.stream.close()
+            if self.stream:
+                self.stream.stop()
+                self.stream.close()
             audio_data = np.concatenate(self.recording, axis=0)
             output_file = 'output.wav'
             write(output_file, self.fs, audio_data)
@@ -95,5 +96,5 @@ class AudioTranscriber:
 
     # Starts the listener for keypress events.
     def start(self):
-        with keyboard.Listener(on_press=self.on_press) as self.listener:
+        with keyboard.Listener(on_press=self.on_press) as self.listener: # type: ignore
             self.listener.join()
